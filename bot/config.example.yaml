@@ -1,0 +1,96 @@
+# 复制为 config.yaml 后使用：cp bot/config.example.yaml bot/config.yaml
+# ================= OneBot11 连接 =================
+onebot:
+  # bot 主动连接 NapCat 的 WebSocket（正向 WS）
+  ws_url: "ws://napcat:3000"
+  # 必须与 NapCat「网络配置」里的 token 完全一致
+  access_token: "请填入 NapCat 的 access_token"
+  # 断线重连的最大间隔（秒）
+  max_backoff: 30
+
+# ================= PostgreSQL =================
+database:
+  # 优先读环境变量 POSTGRES_DSN；此处的 ${POSTGRES_DSN} 会被替换
+  dsn: "${POSTGRES_DSN}"
+  min_pool: 1
+  max_pool: 4
+
+# ================= 大模型（OpenAI 兼容） =================
+llm:
+  # 硅基流动 SiliconFlow（国内直连，OpenAI 兼容）
+  base_url: "https://api.siliconflow.cn/v1"
+  # 留空则从环境变量 LLM_API_KEY 读取
+  api_key: ""
+  # 备选模型（硅基流动的 model 名要带厂商前缀）：
+  #   Qwen/Qwen2.5-7B-Instruct      免费额度，支持工具调用，速度快（默认）
+  #   Qwen/Qwen2.5-72B-Instruct    效果更好，按量计费
+  #   deepseek-ai/DeepSeek-V3      推理更强，按量计费
+  #   Qwen/Qwen3-8B                需在下方 extra_body 里关闭思考模式
+  model: "deepseek-ai/DeepSeek-V4-Flash"
+  temperature: 0.6
+  max_tokens: 300
+  timeout: 60
+  retries: 1
+  # 允许模型调用宝可梦知识库；若模型不支持 function calling 会自动降级
+  tools: true
+  # 透传给接口的额外参数：DeepSeek V4 / Qwen3 默认开启思考模式，
+  # 不关掉的话回复里会混入推理内容，QQ 里很难看
+  extra_body: {enable_thinking: false}
+  system_prompt: |
+    你是「deepseek」，群里一个玩了多年宝可梦集换式卡牌（PTCG）的老玩家，宝可梦知识门儿清。性格有点腹黑，爱顺口吐槽、损人一句，但不刻薄、不优越，也不端着。
+    说话方式：
+    1. 像群里二十来岁的网友聊天：短句、口语、有网感，可以带点自己的态度和吐槽，但别堆梗、别油腻、别端着。
+    2. 一般 1 句，最多 2 句，通常不超过 40 字。开口就是答案或结论，不要开场白（"这几个是特性""我直接按机制推""让我想想""这题考的是"），不复述题目和选项，不做总结。
+    3. 只回答对方问的。没问到的（种族值、传说/幻之身份、世代、英文名、进化链、其他宝可梦）一律不主动提，也别为了显得懂就顺嘴补充。
+    4. 对方明确聊卡牌（PTCG）时才展开聊卡，卡组、单卡、赛制、开盒都能来劲；问游戏或动画设定就答设定，别硬拐到卡牌上。
+    5. 问 A 答 A，别把选项或相关的一串全念一遍；让列名单就只给名字，别挨个点评、排名。算倍率题只报结论加一两个关键对比，别把四个选项挨个念一遍。
+    6. 不说"不过要注意""需要提醒""具体情况可能不同"这类免责声明，也别自称"助手"或"作为一个AI"。不确定就直接说"这个我真不确定"。
+    7. 只要题目涉及招式、特性、道具的效果或数值，必须先调用 get_move_info / get_ability_info / get_item_info 逐个确认，不许凭记忆直接选；工具没返回就直接说不知道，别凭印象编。属性、种族值、招式学习面、属性克制同样先查库。对战规则这类常识题可以直接答。
+    8. 不换行、不分点，一条消息说完，像随口接话，别像答题卡汇报。
+    9. 别抢答。题目类、需要比较倍率的问题，先在心里算清楚再回；实在拿不准就说"这个我不确定"，不要硬给一个错的。
+    10. 机制题先把每个选项到底改了什么拆清楚再比，只改属性、判定、命中、要害率的别当成增伤。
+    11. 问"增幅/提升"时比的是相对提升，不是最终倍率。
+    12. 拿不准就说不确定，绝不编数字。你自己之前的回复只是聊天记录，不是事实来源；被质疑时按机制重新推一遍，上一句错了就直接改口认错。
+    13. 政治、色情、暴力话题不接，轻描淡写地带过。
+
+# ================= 行为策略 =================
+behavior:
+  # 当前阶段：只开管理员私聊，群聊关闭
+  private_enabled: true
+  group_enabled: false
+
+  # 私聊白名单：填 QQ 号，其他人的私聊静默忽略
+  private_whitelist: ["123456789"]
+  # 群白名单：留空表示所有群可用，填群号则只在这些人群里工作
+  group_whitelist: []
+  # 黑名单用户：任何场景都不回复
+  user_blacklist: []
+
+  # 群聊触发方式：@机器人 或 消息以触发词开头（二选一满足即可）
+  require_at_in_group: true
+  group_trigger_prefixes: ["/ai", "小助手"]
+
+  # 单条回复最大字符数，超出自动分条
+  max_reply_chars: 500
+  # 同时处理的请求上限（内存吃紧，别开大）
+  max_concurrency: 3
+
+  # 限流：每用户/每群 每分钟最多请求次数
+  rate_limit:
+    user_per_minute: 6
+    group_per_minute: 15
+
+# ================= 上下文记忆 =================
+memory:
+  # 带给模型的历史消息条数（user+assistant 合计）
+  history_turns: 8
+  # 超过这个时间的上下文自动丢弃（分钟）
+  history_ttl_minutes: 120
+  # 单条历史消息最大字符数，超出截断
+  max_item_chars: 1000
+
+# ================= 宝可梦知识库 =================
+kb:
+  enabled: true
+  # 模糊搜索默认返回条数
+  max_results: 5

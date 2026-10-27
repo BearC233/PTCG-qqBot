@@ -218,3 +218,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# PTCG-qqBot
+bot/config.yaml
+napcat/
+.DS_Store

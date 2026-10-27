@@ -1,0 +1,4 @@
+aiohttp>=3.9,<4
+openai>=1.40,<2
+PyYAML>=6.0,<7
+asyncpg>=0.29,<1

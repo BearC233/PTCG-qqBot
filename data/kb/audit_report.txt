@@ -1,0 +1,9 @@
+===== 知识库一致性报告 =====
+源数据：{'moves.csv': 937, 'abilities.csv': 374, 'items.csv': 2223, 'pokemon.csv': 1351, 'wiki_effects.csv': 115}
+入库：kb_pokemon=1351 kb_move=970 kb_ability=374 kb_item=2223 kb_evolution=484 kb_type_chart=324
+效果覆盖：招式中文 932/970，招式任一 970/970；特性中文 268/374，特性任一 314/374；道具中文 1560/2223
+缺失检查：招式无效果 0 条（展示前 0），特性无效果 40 条，道具无效果 40 条，百科条目未匹配 0 条
+招式重名：[('究极无敌大冲撞', 2), ('全力无双激烈拳', 2), ('绝对捕食回旋斩', 2), ('强酸剧毒灭绝雨', 2), ('极速俯冲轰烈撞', 2), ('可爱星星飞天撞', 2), ('毁天灭地巨岩坠', 2), ('超强极限爆焰弹', 2), ('超级水流大漩涡', 2), ('终极伏特狂雷闪', 2)]
+特性重名：[('人马一体', 2)]
+特性缺效果示例：Mountaineer、Wave Rider、Skater、Thrust、Perception、Parry、Instinct、Dodge、Jagged Edge、Frostbite、Tenacity、Pride、Deep Sleep、Power Nap、Spirit、Warm Blanket、Gulp、Herbivore、Sandpit、Hot Blooded
+道具缺效果示例：大金刚宝玉、大白宝玉、大白金宝玉、净空石板、奇异球、传说石板、手机洛托姆、三明治、故勒顿的球、密勒顿的球、太晶珠、朱之书、紫之书、海岱的钱包、小竹笋、大竹笋、恶之挂轴、水之挂轴、咒术之铠、一般太晶碎块
